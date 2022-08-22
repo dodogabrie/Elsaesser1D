@@ -14,11 +14,11 @@ help:
 all: compile run plot
 
 compile:
-	$(COMPILE_BASE) $(MAIN) -o run
+	$(COMPILE_BASE) $(MAIN) -o run.out
 
 .PHONY: run
 run:
-	./run
+	./run.out
 
 plot:
 	python plots/main.py
