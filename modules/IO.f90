@@ -37,6 +37,8 @@ contains
       allocate ( alpha(n-1), beta(n-2), z(n))
       allocate ( y_aux(n-6))
       allocate ( diagonal(n-2))
+      allocate ( b_mod(n-2))
+      allocate ( yy(n))
       call linspace()
    end subroutine initialize
 end module IO

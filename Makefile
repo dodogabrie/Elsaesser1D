@@ -14,7 +14,7 @@ help:
 all: compile run plot
 
 compile:
-	$(COMPILE_BASE) $(MAIN) -o run.out
+	$(COMPILE_BASE) $(MAIN) -Ofast -o run.out
 
 .PHONY: run
 run:
@@ -35,4 +35,14 @@ test-penta:
 	$(COMPILE_BASE) tests/test_penta.f90 -llapack -lblas -o tests/test_penta.out
 	clear
 	./tests/test_penta.out
+test-tridiag: 
+	$(COMPILE_BASE) tests/test_tridiag.f90 -llapack -lblas -o tests/test_tridiag.out
+	clear
+	./tests/test_tridiag.out
+test-derivative: 
+	$(COMPILE_BASE) tests/test_derivative.f90 -o tests/test_derivative.out
+	clear
+	./tests/test_derivative.out
+	python tests/plot_der.py
+	
 	
