@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import chart_studio.tools as tls
 import os
 
 def matplotlib_animation():
@@ -52,7 +53,7 @@ def matplotlib_animation():
     
     plt.show()
 
-def plotly_animation():
+def plotly_animation(get_embed = False):
 
     _, _, dt, T_steps, _ , _ = np.loadtxt('input.dat', unpack=True, comments = '!')
     def ID_files(f): # Number of files
@@ -111,10 +112,12 @@ def plotly_animation():
 
     figa.update_layout(sliders=sliders)
     figa.write_html("figure/animation.html")
-    figa.show()
-
+    if get_embed:
+        tls.get_embed('https://github.com/dodogabrie/Elsasser1D/blob/main/figure/animation.html') 
+    else:
+        figa.show()
     return
 
 if __name__ == '__main__':
 #    matplotlib_animation()
-    plotly_animation()
+    plotly_animation(get_embed=True)
