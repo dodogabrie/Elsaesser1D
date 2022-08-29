@@ -11,7 +11,10 @@ contains
       write(x1, fmt) num
       open(1,file='data/output'//trim(x1)//'.dat',status='unknown')
       do i = 1, n
-         write(1, *) xx(i), f(i), g(i)
+				if (f(i) .ge. 1e4) then
+					write(*,*) "Probably overflow!"
+				endif 
+        write(1, *) xx(i), f(i), g(i), (g(i)+f(i)) * 0.5, (g(i)-f(i)) * 0.5
       end do
       close(1)
    end subroutine save_state

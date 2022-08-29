@@ -6,6 +6,7 @@ subroutine RHS()
   use numericals
   use derivative
 	use lele_filter, only: filter6
+	implicit none
   integer :: i
   real*8 :: lambda_f, lambda_g, tmp_f
   call DFC1(aux_f, der1_f)
@@ -24,7 +25,7 @@ subroutine RHS()
   end do
   tmp_f = aux_f(1)
   lambda_f = c + aux_g(1)
-  aux_f(1) = ( 1 + SIGN(1.d0, lambda_f) ) * lambda_f * 0.5d0 * der1_f(1)
+  aux_f(1) = ( 1 + SIGN(1.d0, lambda_f) ) * lambda_f * 0.5d0 * der1_f(1) 
   lambda_g = - c + tmp_f
   aux_g(1) = ( 1 + SIGN(1.d0, lambda_g) ) * lambda_g * 0.5d0 * der1_g(1)
 
@@ -39,7 +40,8 @@ subroutine RK(order)
 ! Runge Kutta of order N for time indipendent PDE
   use numericals
   use physicals
-  integer :: order, k
+	implicit none
+  integer :: order, k, i
   do i = 1, n
     aux_f(i) = f(i)
     aux_g(i) = g(i)
@@ -63,22 +65,23 @@ program main
   use IO
   implicit none
   integer :: order, i, state, kk
-  real*8 :: mu_f, mu_g, sigma
+  real*8 :: mu_f, mu_g, sigma, A
   order = 4
   call initialize()
-  mu_f = L/3
-  mu_g = 2 * L/3
+  mu_f = L/4
+  mu_g = 3* L/4
   sigma = L/10
-  kk = 2
+	A = 0.9d0
+  kk = 1
   state = 0
   do i = 1, n
-    f(i) = 1.3 * EXP( -( xx(i) - mu_f)*( xx(i) - mu_f)/(sigma * sigma) ) * SIN( kk *  2 * PI / (4 * sigma) * (xx(i)-mu_f))
-    g(i) = EXP( -( xx(i) - mu_g)*( xx(i) - mu_g)/(sigma * sigma) )! * SIN( kk *  2 * PI / L * xx(i))
+    f(i) = A * EXP( -( xx(i) - mu_f)*( xx(i) - mu_f)/(sigma * sigma) ) * SIN( kk *  2 * PI / (2 * sigma) * (xx(i)-mu_f))
+    g(i) = A * EXP( -( xx(i) - mu_g)*( xx(i) - mu_g)/(sigma * sigma) ) !* SIN( kk *  2 * PI / (2 * sigma) * (xx(i)-mu_g))
   end do
   call save_state(state)
   do i = 1, T_STEPS
     call RK(order)
-    if (mod(i, 50) == 0) then
+    if (mod(i, 100) == 0) then
       write(*,fmt="(I10)",advance='NO') i
       state = state + 1
       call save_state(state)

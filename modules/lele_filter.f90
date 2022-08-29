@@ -88,19 +88,25 @@ contains!               u_ll, u_l, u_d, u_p, u_pp  MX = Y
    subroutine filter6(f)
       use numericals, only: n
       real*8, dimension(n) :: f
-      real*8 :: a, b, c, alp, bet
+      real*8 :: a, b, c, d, alp, bet
       real*8 :: diag, lo, lolo, up, upup, f1, f2
+			integer :: i, ii
       alp = 0.d0
       bet = 3/10.d0
 
       a = 0.5
       b = 0.75
       c = 3/10.d0
+			d = 1.d0/20.d0
       diag = 1.d0
       lo = alp
       lolo = bet
       up = lo
       upup = lolo
+      do i = 1, n-6
+				ii = i+3
+        y_aux(i) = a * f(ii) + b * 0.5 * (f(ii+1) + f(ii-1)) + c * 0.5 * (f(ii+2) + f(ii-2)) + d * 0.5 * (f(ii+3) + f(ii-3))
+      enddo
       f1 = f(1)
       f2 = f(2)
       f(1) = 15.d0/16 * f(1) + 1.d0/16 * (4*f(2) - 6 * f(3) + 4 * f(4) - f(5))
@@ -108,12 +114,21 @@ contains!               u_ll, u_l, u_d, u_p, u_pp  MX = Y
       f(3) = 5.d0/8   * f(3) + 1.d0/16 * (- f1   + 4 * f2   + 4 * f(4) - f(5))
       f1 = f(n)
       f2 = f(n-1)
-      f(n)   = 15.d0/16*f(n)+1.d0/16*(4*f(n-1)-6*f(n-2)+4*f(n-3)-f(n-4))
-      f(n-1) = 3.d0/4*f(n-1)+1.d0/16*(  f1 + 6 * f(n-2) - 4 * f(n-3) + f(n-4))
-      f(n-2) = 5.d0/8* f(n-2) + 1.d0/16 * (- f1   + 4 * f2+ 4 * f(n-3) - f(n-4))
-      do i = 1, n-6
-         y_aux(i) = f(i+3)
-      enddo
+      f(n)   = 15.d0/16 * f(n)    + 1.d0/16*(4*f(n-1)- 6 * f(n-2) + 4 * f(n-3) - f(n-4))
+      f(n-1) = 3.d0/4   * f(n-1)  + 1.d0/16*(  f1    + 6 * f(n-2) - 4 * f(n-3) + f(n-4))
+      f(n-2) = 5.d0/8   * f(n-2)  + 1.d0/16*(- f1    + 4 * f2     + 4 * f(n-3) - f(n-4))
+			i = 1
+			ii = i + 3
+			y_aux(i) = y_aux(i) - alp * f(ii - 1) - bet * f(ii - 2)
+			i = 2
+			ii = i + 3
+			y_aux(i) = y_aux(i) - bet * f(ii - 2) 
+			i = n - 6
+			ii = i + 3
+			y_aux(i) = y_aux(i) - alp * f(ii + 1) - bet * f(ii + 2)
+			i = n - 7
+			ii = i + 3
+			y_aux(i) = y_aux(i) - bet * f(ii + 2)
       call pentadiag_simple(lolo, lo, diag, up, upup, y_aux, y_aux, n-6)
       do i = 1, n-6
          f(i + 3) = y_aux(i)

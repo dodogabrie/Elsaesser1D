@@ -44,5 +44,10 @@ test-derivative:
 	clear
 	./tests/test_derivative.out
 	python tests/plot_der.py
+test-filters: 
+	$(COMPILE_BASE) tests/test_lele.f90 -o tests/test_lele.out
+	clear
+	./tests/test_lele.out
+	python tests/plot_lele.py
 	
 	

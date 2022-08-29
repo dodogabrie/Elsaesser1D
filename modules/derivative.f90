@@ -106,7 +106,7 @@ contains
 			lu = 1.d0
 			d = 10.d0
 			yy(1) = 1/(dx * dx) * (13.d0 * f(1) - 27.d0 * f(2) + 15.d0 *f(3) - f(4))
-			yy(1) = - 1/(dx * dx) * (13.d0 * f(n) - 27.d0 * f(n-1) + 15.d0 *f(n-2) - f(n-3))
+			yy(n) = 1/(dx * dx) * (13.d0 * f(n) - 27.d0 * f(n-1) + 15.d0 *f(n-2) - f(n-3))
 			do i = 2, n-1
 				yy(i) = 12.d0 * inv_dx * inv_dx  * (f(i+1) - 2 * f(i) + f(i-1))
 			enddo

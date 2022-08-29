@@ -4,13 +4,14 @@ import matplotlib.animation as animation
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import chart_studio.tools as tls
+import datapane as dp 
 import os
 
 def matplotlib_animation():
     fig, axs = plt.subplots(1, 2, figsize=(15, 10))
     data_dir = 'data/'
     files = os.listdir(data_dir)
-    x, u_init, b_init = np.loadtxt(data_dir + 'output00000.dat', unpack=True)
+    x, zp, zm, u_init, b_init = np.loadtxt(data_dir + 'output00000.dat', unpack=True)
     num_data = len(files)
     print('Found', num_data, 'data files')
     
@@ -41,7 +42,7 @@ def matplotlib_animation():
     def animate(i):
         leni = len(str(i))
         ID = '0'*(5 - leni) + str(i)
-        _, u, b = np.loadtxt(data_dir + 'output' + ID + '.dat', unpack=True)
+        _, zp, zm, u, b = np.loadtxt(data_dir + 'output' + ID + '.dat', unpack=True)
         fix_size()
         line[1].set_data(x, u)
         line[3].set_data(x, b)
@@ -53,7 +54,7 @@ def matplotlib_animation():
     
     plt.show()
 
-def plotly_animation(get_embed = False):
+def plotly_animation(get_embed = False, Elsasser = True):
 
     _, _, dt, T_steps, _ , _ = np.loadtxt('input.dat', unpack=True, comments = '!')
     def ID_files(f): # Number of files
@@ -63,13 +64,19 @@ def plotly_animation(get_embed = False):
         ff.sort(key=lambda f: ID_files(f))
         return files
 
-    def get_data(filename):
-        x, zp, zm = np.loadtxt(data_dir + filename, unpack=True)
-        return x, zp, zm
+    def get_data(filename, Elsasser = True):
+        x, zp, zm, u, b = np.loadtxt(data_dir + filename, unpack=True)
+        if Elsasser:
+            return x, zp, zm
+        else: 
+            return x, u, b
 
-    def scatter_from_file(filename):
-        x, zp, zm = get_data(filename)
-        return [go.Scatter(x=x, y=zp, name='zm'), go.Scatter(x=x, y=zm, name='zp')]
+    def scatter_from_file(filename, Elsasser):
+        x, y, z = get_data(filename, Elsasser)
+        if Elsasser: 
+            return [go.Scatter(x=x, y=y, name='zm'), go.Scatter(x=x, y=z, name='zp')]
+        else:
+            return [go.Scatter(x=x, y=y, name='u'), go.Scatter(x=x, y=z, name='b')]
 
     # Extract list of data sorted by time
     data_dir = 'data/'
@@ -80,18 +87,23 @@ def plotly_animation(get_embed = False):
 
     tt = np.arange(0, T_steps*dt, real_step*dt)
 
-    x, zp, zm = np.loadtxt(data_dir + files[0], unpack=True)
+    x, y, z = get_data(files[0], Elsasser = Elsasser)
+##    x, zp, zm, u, b = np.loadtxt(data_dir + files[0], unpack=True)
     fig = make_subplots(rows=1, cols=2, subplot_titles=('Z+', 'Z-'),
                         horizontal_spacing=0.051)
-    fig.add_trace(go.Scatter(x=x, y=zp, line_width=1, marker_size = 0), row=1, col=1)
-    fig.add_trace(go.Scatter(x=x, y=zm, line_width=1, marker_size = 0), row=1, col=2)
+    fig.add_trace(go.Scatter(x=x, y=y, line_width=1, marker_size = 0), row=1, col=1)
+    fig.add_trace(go.Scatter(x=x, y=z, line_width=1, marker_size = 0), row=1, col=2)
 
     frames = [dict(name = t,
-              data = scatter_from_file(f),
+              data = scatter_from_file(f, Elsasser),
               traces=[0, 1] # the elements of the list [0,1,2] give info on the traces in fig.data
                                       # that are updated by the above three go.Scatter instances
               ) for f, t in zip(files, tt)]
 
+    fig.layout.yaxis1.range = [-1.1, 1.1]
+    fig.layout.yaxis2.range = [-1.1, 1.1]
+    fig.layout.xaxis1.range = [np.min(x), np.max(x)]
+    fig.layout.xaxis2.range = [np.min(x), np.max(x)]
     figa = go.Figure(data=fig.data, frames=frames, layout=fig.layout)
     # add slider
     sliders=[{"active": 0,
@@ -111,13 +123,13 @@ def plotly_animation(get_embed = False):
 
 
     figa.update_layout(sliders=sliders)
-    figa.write_html("figure/animation.html")
     if get_embed:
-        tls.get_embed('https://github.com/dodogabrie/Elsasser1D/blob/main/figure/animation.html') 
+        report = dp.Report(dp.Plot(figa))
+        report.upload(name="figura di esempio", open=True)
     else:
         figa.show()
     return
 
 if __name__ == '__main__':
 #    matplotlib_animation()
-    plotly_animation(get_embed=True)
+    plotly_animation(get_embed=False, Elsasser=True)
