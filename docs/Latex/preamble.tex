@@ -8,6 +8,8 @@
 \usepackage{float}
 \usepackage{physics}
 \usepackage{tikz}
+\usepackage{mathtools}
+\usepackage{amssymb}
 \usepackage{comment}
 \usepackage{tikz-3dplot}
 \usepackage[outline]{contour} % glow around text
@@ -27,9 +29,19 @@
 \usetikzlibrary{angles,quotes} % for pic (angle labels)
 \contourlength{1.3pt}
 
+
+
 % Set page size and margins
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
 \usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{titlesec}
+
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+
+
 
 % Useful packages
 \usepackage{amsmath}
@@ -38,3 +50,5 @@
 \newcommand{\vv}[1]{\vectorbold{#1}}
 \newcommand{\pd}[1]{\frac{\partial #1}{\partial t}}
 \newcommand{\pdx}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\Lagr}{\mathcal{L}}
+\newcommand{\ov}[1]{\overline{#1}}

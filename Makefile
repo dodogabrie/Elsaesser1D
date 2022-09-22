@@ -29,7 +29,7 @@ clean:
 	rm -rf *~ *.mod $(MDIR)/*.mod *.out *.o *.html build __pycache__
 
 clean-data:
-	rm -rf data/*
+	rm -rf data/nlin/* data/line/*
 
 test-penta: 
 	$(COMPILE_BASE) tests/test_penta.f90 -llapack -lblas -o tests/test_penta.out

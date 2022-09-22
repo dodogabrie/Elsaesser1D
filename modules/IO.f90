@@ -1,15 +1,16 @@
 module IO
    implicit none
 contains
-   subroutine save_state(num)
+   subroutine save_state(name, num)
       use physicals, only: f, g
       use numericals, only: n, xx
       integer :: num, i
       character(8) :: fmt
       character(5) :: x1
+      character(4) :: name
       fmt = '(I5.5)'
       write(x1, fmt) num
-      open(1,file='data/output'//trim(x1)//'.dat',status='unknown')
+      open(1,file='data/'//name//'/output'//trim(x1)//'.dat',status='unknown')
       do i = 1, n
 				if (f(i) .ge. 1e4) then
 					write(*,*) "Probably overflow!"
